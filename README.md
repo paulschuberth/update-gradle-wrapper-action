@@ -29,6 +29,7 @@ Request](https://user-images.githubusercontent.com/316923/93274006-8922ef80-f7b9
   - [`paths-ignore`](#paths-ignore)
   - [`set-distribution-checksum`](#set-distribution-checksum)
   - [`release-channel`](#release-channel)
+  - [`commit-message-template`](#commit-message-template)
 - [Examples](#examples)
   - [Scheduling action execution](#scheduling-action-execution)
   - [Targeting a custom branch](#targeting-a-custom-branch)
@@ -406,6 +407,25 @@ For example:
 ```yaml
 with:
   release-channel: release-candidate
+```
+
+### `commit-message-template`
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `commit-message-template` | The template to use for the commit message created by this action | No | `Update Gradle Wrapper from %sourceVersion% to %targetVersion%` |
+
+This input is used for the message of the commit created by this action. This allows for better integration into
+repositories which make use of commit message patterns like [Conventional Commits](https://www.conventionalcommits.org/).
+
+`%sourceVersion%` and `%targetVersion%` will be replaced by the current/old and the new version of the Gradle Wrapper
+respectively.
+
+For example:
+
+```yaml
+with:
+  commit-message-template: 'chore(deps): Bump Gradle Wrapper from %sourceVersion% to %targetVersion%'
 ```
 
 ## Examples

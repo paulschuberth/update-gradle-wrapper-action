@@ -280,10 +280,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.commit = void 0;
 const git = __importStar(__nccwpck_require__(8940));
-function commit(files, targetVersion, sourceVersion) {
+function commit(files, commitMessage) {
     return __awaiter(this, void 0, void 0, function* () {
         yield git.add(files);
-        yield git.commit(`Update Gradle Wrapper from ${sourceVersion} to ${targetVersion}.`);
+        yield git.commit(commitMessage);
     });
 }
 exports.commit = commit;
@@ -789,6 +789,13 @@ class ActionInputs {
         if (!acceptedReleaseChannels.includes(this.releaseChannel)) {
             throw new Error('release-channel has unexpected value');
         }
+        this.commitMessageTemplate = core
+            .getInput('commit-message-template', { required: false })
+            .trim();
+        if (!this.commitMessageTemplate) {
+            this.commitMessageTemplate =
+                'Update Gradle Wrapper from %sourceVersion% to %targetVersion%';
+        }
     }
 }
 
@@ -801,8 +808,17 @@ class ActionInputs {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.pullRequestText = void 0;
+exports.pullRequestText = exports.commitMessageText = void 0;
 const ISSUES_URL = 'https://github.com/gradle-update/update-gradle-wrapper-action/issues';
+const TARGET_VERSION_PLACEHOLDER = '%targetVersion%';
+const SOURCE_VERSION_PLACEHOLDER = '%sourceVersion%';
+function commitMessageText(template, source, target) {
+    let message = template;
+    message = message.replace(TARGET_VERSION_PLACEHOLDER, target);
+    message = message.replace(SOURCE_VERSION_PLACEHOLDER, source ? source : 'undefined');
+    return message;
+}
+exports.commitMessageText = commitMessageText;
 function pullRequestText(distTypes, targetRelease, sourceVersion) {
     const targetVersion = targetRelease.version;
     const title = sourceVersion
@@ -1055,6 +1071,7 @@ const git = __importStar(__nccwpck_require__(8940));
 const gitAuth = __importStar(__nccwpck_require__(1304));
 const store = __importStar(__nccwpck_require__(5826));
 const git_commit_1 = __nccwpck_require__(4779);
+const messages_1 = __nccwpck_require__(9112);
 const wrapperInfo_1 = __nccwpck_require__(6832);
 const wrapperUpdater_1 = __nccwpck_require__(7412);
 const find_1 = __nccwpck_require__(2758);
@@ -1133,7 +1150,8 @@ class MainAction {
                         yield updater.verify();
                         core.endGroup();
                         core.startGroup('Committing');
-                        yield (0, git_commit_1.commit)(modifiedFiles, targetRelease.version, wrapper.version);
+                        const commitMessage = (0, messages_1.commitMessageText)(this.inputs.commitMessageTemplate, wrapper.version, targetRelease.version);
+                        yield (0, git_commit_1.commit)(modifiedFiles, commitMessage);
                         core.endGroup();
                         commitDataList.push({
                             files: modifiedFiles,

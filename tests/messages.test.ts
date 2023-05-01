@@ -12,8 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {pullRequestText} from '../src/messages';
 import {Release} from '../src/releases';
+import {commitMessageText, pullRequestText} from '../src/messages';
+
+describe('commitMessageText', () => {
+  it('replaces %sourceVersion% with the source version parameter', () => {
+    const message = commitMessageText(
+      'Update from %sourceVersion%',
+      '1.0.0',
+      '1.0.1'
+    );
+    expect(message).toEqual('Update from 1.0.0');
+  });
+
+  it('replaces %targetVersion% with the source version parameter', () => {
+    const message = commitMessageText(
+      'Update to %targetVersion%',
+      '1.0.0',
+      '1.0.1'
+    );
+    expect(message).toEqual('Update to 1.0.1');
+  });
+
+  it('replaces both placeholders', () => {
+    const message = commitMessageText(
+      'Update from %sourceVersion% to %targetVersion%',
+      '1.0.0',
+      '1.0.1'
+    );
+    expect(message).toEqual('Update from 1.0.0 to 1.0.1');
+  });
+});
 
 describe('pullRequestText', () => {
   const distributionTypes = new Set(['all', 'bin']);

@@ -17,6 +17,19 @@ import {Release} from './releases';
 const ISSUES_URL =
   'https://github.com/gradle-update/update-gradle-wrapper-action/issues';
 
+const TARGET_VERSION_PLACEHOLDER = '%targetVersion%';
+const SOURCE_VERSION_PLACEHOLDER = '%sourceVersion%';
+
+export function commitMessageText(
+  template: string,
+  source: string,
+  target: string
+): string {
+  return template
+    .replace(TARGET_VERSION_PLACEHOLDER, target)
+    .replace(SOURCE_VERSION_PLACEHOLDER, source);
+}
+
 export function pullRequestText(
   distTypes: Set<string>,
   targetRelease: Release,

@@ -35,7 +35,9 @@ const defaultMockInputs: Inputs = {
   setDistributionChecksum: true,
   paths: [],
   pathsIgnore: [],
-  releaseChannel: ''
+  releaseChannel: '',
+  commitMessageTemplate:
+    'Update Gradle Wrapper from %sourceVersion% to %targetVersion%'
 };
 
 const defaultMockGitHubApi: IGitHubApi = {

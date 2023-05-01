@@ -25,6 +25,7 @@ export interface Inputs {
   paths: string[];
   pathsIgnore: string[];
   releaseChannel: string;
+  commitMessageTemplate: string;
 }
 
 export function getInputs(): Inputs {
@@ -44,6 +45,7 @@ class ActionInputs implements Inputs {
   paths: string[];
   pathsIgnore: string[];
   releaseChannel: string;
+  commitMessageTemplate: string;
 
   constructor() {
     this.repoToken = core.getInput('repo-token', {required: false});
@@ -99,6 +101,15 @@ class ActionInputs implements Inputs {
     }
     if (!acceptedReleaseChannels.includes(this.releaseChannel)) {
       throw new Error('release-channel has unexpected value');
+    }
+
+    this.commitMessageTemplate = core
+      .getInput('commit-message-template', {required: false})
+      .trim();
+
+    if (!this.commitMessageTemplate) {
+      this.commitMessageTemplate =
+        'Update Gradle Wrapper from %sourceVersion% to %targetVersion%';
     }
   }
 }

@@ -45,6 +45,10 @@ inputs:
     description: 'Gradle release channel to be used (either `stable` or `release-candidate`).'
     required: false
     default: stable
+  commit-message-template:
+    description: 'Template used for commit message and PR title'
+    required: false
+    default: 'Update Gradle Wrapper from %sourceVersion% to %targetVersion%'
 
 runs:
   using: 'node16'
